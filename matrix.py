@@ -44,17 +44,18 @@ class matrix(object):
         return matrix(m1)
 
     def pokazatel(self):
-        sum=0
-        if self.l==1:
-            return (self.matrix[0][0])
-        else:
-            n = 0
-            while n < self.h:
-                e = int(self.matrix[0][n])
-                k=((self.delelete_hight(n)).delete_line(0)).pokazatel()
-                sum += ((-1)**(n+2))*e*(k)
-                n+=1
-        return sum
+        if self.h==self.l:
+            sum=0
+            if self.l==1:
+                return (self.matrix[0][0])
+            else:
+                n = 0
+                while n < self.h:
+                    e = int(self.matrix[0][n])
+                    k=((self.delelete_hight(n)).delete_line(0)).pokazatel()
+                    sum += ((-1)**(n+2))*e*(k)
+                    n+=1
+            return sum
     def sumL(self, n, m, k):
         H=self.h
         mas=self.matrix
@@ -63,35 +64,43 @@ class matrix(object):
             mas[n][H] = k*mas[m][H]+mas[n][H]
         return matrix(mas)
     def triangularH(self):
-        l = 0
-        mas = self.matrix
-        a = 0
-        if self.l==1:
-            return(self)
+        if self.h==1 and self.l>1:
+            l=1
+            m=[[self.matrix[0][0]]]
+            while l<self.l:
+                m.append([0])
+                l+=1
+            return matrix(m)
         else:
-            while a == 0 and l < self.l:
-                a = mas[l][0]
-                l += 1
-            if l == self.l and a==0:
-                print('показатель матрицы = 0')
-                z = matrix(mas).delete_line(0).delelete_hight(0).triangularH().matrix
+            l = 0
+            mas = self.matrix
+            a = 0
+            if self.l==1:
+                return(self)
             else:
-                if l!=1:
-                    mas = matrix(mas).sumL(0, l-1, 1).matrix
-                l = 1
-                while l < self.l:
-                    r = (-1)*(mas[l][0])/mas[0][0]
-                    mas = matrix(mas).sumL(l, 0, r).matrix
+                while a == 0 and l < self.l:
+                    a = mas[l][0]
                     l += 1
-                z = matrix(mas).delete_line(0).delelete_hight(0).triangularH().matrix
-            L = 0
-            while L < self.l-1:
-                H = 0
-                while H < self.h-1:
-                    mas[L+1][H+1] = z[L][H]
-                    H += 1
-                L += 1
-            return matrix(mas)
+                if l == self.l and a==0:
+                    print('показатель матрицы = 0')
+                    z = matrix(mas).delete_line(0).delelete_hight(0).triangularH().matrix
+                else:
+                    if l!=1:
+                        mas = matrix(mas).sumL(0, l-1, 1).matrix
+                    l = 1
+                    while l < self.l:
+                        r = (-1)*(mas[l][0])/mas[0][0]
+                        mas = matrix(mas).sumL(l, 0, r).matrix
+                        l += 1
+                    z = matrix(mas).delete_line(0).delelete_hight(0).triangularH().matrix
+                L = 0
+                while L < self.l-1:
+                    H = 0
+                    while H < self.h-1:
+                        mas[L+1][H+1] = z[L][H]
+                        H += 1
+                    L += 1
+                return matrix(mas)
     def stabilizator(self):
         l=self.l
         m=self.matrix
@@ -104,22 +113,24 @@ class matrix(object):
                     m = matrix(m).sumL(h, l, (-1) * (m[h][l]) / m[l][l]).matrix
         return  matrix(m)
     def Gaus(self):
-        m=self
-        return m.triangularH().stabilizator()
+        if self.l==self.h:
+            m=self
+            return m.triangularH().stabilizator()
 
     def print(self):
         l = 0
         while l < self.l:
-            print((self.matrix[l]))
+            print('\t'.join(list(map(str, (self.matrix[l])))))
             l += 1
     def GausPokazatel(self):
-        ma=self.Gaus().matrix
-        l=0
-        sum=1
-        while l<self.l:
-            sum=sum*ma[l][l]
-            l+=1
-        return sum
+        if self.h==self.l:
+            ma=self.Gaus().matrix
+            l=0
+            sum=1
+            while l<self.l:
+                sum=sum*ma[l][l]
+                l+=1
+            return sum
 if __name__=="__main__":
     mas=[]
     print('-=-=-=-=-=-=-=-')
@@ -128,18 +139,23 @@ if __name__=="__main__":
     print('7 0 99')
     print('')
     print('-=-=-=-=-=-=-=-')
-    print('после того, как вели матрицу сделайте пустую строку')
+    print('P.S. после того, как вели матрицу сделайте пустую строку')
     print('-=-=-=-=-=-=-=-')
     while True:
         a=str(input())
         if a=='':
             break
         else:
-            mas.append(list(map(int, a.split())))
+            mas.append(list(map(float, a.split())))
+            if len(mas[0])!=len(mas[-1]):
+                mas=[]
+                print('ошибка вывода')
+                break
+
     ma=matrix(mas)
     print('-=-=-=-=-=-=-=-')
-    print('диагональная матрица (при показателе не равном 0)')
-    ma=ma.Gaus().print()
+    print('верхнеступенчатая матрица:')
+    ma=ma.triangularH().print()
     print('-=-=-=-=-=-=-=-')
     print('показатель:')
     print(matrix(mas).pokazatel())
