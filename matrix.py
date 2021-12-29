@@ -131,8 +131,77 @@ class matrix(object):
                 sum=sum*ma[l][l]
                 l+=1
             return sum
+    def plus(self, mat): #сложение матриц
+        l=0
+        m=mat.matrix
+        d=[]
+        if self.l==len(m) and self.h==len(m[0]):
+            while l<self.l:
+                 h=0
+                 d.append([])
+                 while h<self.h:
+                     d[l].append(m[l][h]+self.matrix[l][h])
+                     h=1+h
+                 l+=1
+            return matrix(d)
+        else:
+            print('Ошибка')
+            return matrix([[]])
+    def multi(self, k): #умножение на число
+        l=0
+        while l<self.l:
+            h=0
+            while h<self.h:
+                self.matrix[l][h]=self.matrix[l][h]*k
+                h=1+h
+            l+=1
+        return self
+    def T(self): #транспонирование
+        tmatrix=[]
+        l=0
+        while l<self.l:
+            h=0
+            while h<self.h:
+                tmatrix.append([])
+                tmatrix[h].append(self.matrix[l][h])
+                h=1+h
+            l+=1
+        return matrix(tmatrix)
+    def multy(self, mat): #перемножение матриц
+        m=mat.matrix
+        M=self.matrix
+        l = 0
+        E=[]
+        if self.h == mat.l:
+            while l < self.l:
+                h = 0
+                E.append([])
+                while h < mat.h:
+                    r=0
+                    s=0
+                    while r<self.h:
+                        s+=M[l][r]*m[r][h]
+                        r+=1
+                    E[l].append(s)
+                    h = 1 + h
+                l += 1
+            return matrix(E)
+        else:
+            print('Ошибка')
+            return matrix([[]])
+    def stepen(self, n): #быстрое возведение в степень
+        m=[[1, self.matrix]]
+        while n!=m[-1][0]:
+            l=len(m)
+            if n>2*m[-1][0]:
+                m.append([2*m[l-1][0], matrix(m[-1][1]).multy(matrix(m[l-1][1])).matrix])
+            else:
+                m.append([m[l-1][0]+m[l-2][0], matrix(m[-1][1]).multy(matrix(m[l-2][1])).matrix])
+        return matrix(m[-1][1])
+
 if __name__=="__main__":
     mas=[]
+    masi=[]
     print('-=-=-=-=-=-=-=-')
     print('введите матрицу. Пример:')
     print('-1 9 4')
@@ -151,11 +220,34 @@ if __name__=="__main__":
                 mas=[]
                 print('ошибка вывода')
                 break
-
+    print('введите 2 матрицу')
+    print('-=-=-=-=-=-=-=-')
+    print('P.S. после того, как вели матрицу сделайте пустую строку')
+    print('-=-=-=-=-=-=-=-')
+    while True:
+        a = str(input())
+        if a == '':
+            break
+        else:
+            masi.append(list(map(float, a.split())))
+            if len(masi[0]) != len(masi[-1]):
+                masi = []
+                print('ошибка вывода')
+                break
     ma=matrix(mas)
     print('-=-=-=-=-=-=-=-')
+    mat = ma.plus(matrix(masi))
+    print('их сумма')
+    mat.print()
+    print('их произведение')
+    mat = ma.multy(matrix(masi))
+    mat.print()
+    print('------')
+    print('транспонированная 1 матрица')
+    ma.T().print()
+    print('------')
     print('верхнеступенчатая матрица:')
-    ma=ma.triangularH().print()
+    ma = ma.triangularH().print()
     print('-=-=-=-=-=-=-=-')
     print('показатель:')
     print(matrix(mas).pokazatel())
